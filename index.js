@@ -72,4 +72,17 @@ program
     console.log('args', module, JSON.stringify(args))
   })
 
+program
+  .command('list-components')
+  .description('test arguments')
+  .action(function(module, args) {
+    const command = `git log | grep git-subtree-dir | tr -d ' ' | cut -d ":" -f2 | sort | uniq`
+    exec(command, function(error, stdout, stderr) {
+      if (error) rej(error)
+      if (stdout) console.log(stdout)
+      if (stderr) console.log("shell error: " + stderr)
+    })
+  })
+
+
 program.parse(process.argv)
