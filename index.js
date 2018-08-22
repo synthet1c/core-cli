@@ -53,7 +53,6 @@ program
   .command('subtree <module> [component...]')
   .description('install a component using git subtree')
   .action(function(module, components) {
-    console.log('fnc', installComponent)
     const promises = components.map(
       component => installComponent(module, component)
     )

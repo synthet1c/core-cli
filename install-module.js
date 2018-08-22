@@ -10,7 +10,7 @@ module.exports = function(module, installPath = 'modules') {
 
     const command = [
       `git clone --depth=1 ${modules[module].repo} ${installPath}/${module}`,
-      `rm -rf ${installPath}/${module}/.git`,
+      `rm -rf ${installPath}/${modules[module].repo}/.git`,
       // `rm !$/.gitignore`
     ].join(' && ')
 
