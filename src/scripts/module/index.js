@@ -1,0 +1,5 @@
+require('./module-contribute')
+require('./module-install')
+require('./module-list')
+require('./module-symbolic-ref')
+require('./module-update')
