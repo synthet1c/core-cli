@@ -11,8 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "btoa": "^1.2.1",
     "commander": "^2.17.1",
     "inquirer": "^6.1.0",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "node-fetch": "^2.2.0"
   }
 }

@@ -1,7 +1,7 @@
 const exec = require('child_process').exec
 const modules = require('./modules')
 
-module.exports = function(module, installPath = 'modules') {
+module.exports = function(module, siteName) {
   return new Promise((res, rej) => {
     
     if (typeof modules[module] === 'undefined') {
@@ -9,12 +9,12 @@ module.exports = function(module, installPath = 'modules') {
     }
 
     const config = modules[module]
-
     const command = [
-      `git clone --depth=1 ${config.repo} ${installPath}/${config.module}`,
-      `rm -rf ${installPath}/${config.repo}`,
-      // `rm !$/.gitignore`
-    ].join(' && ')
+      siteName ? `cd ${siteName} &&` : ``,
+      `git subtree add`,
+      `--prefix modules/${config.module}`,
+      `${config.repo} master --squash`
+    ].join(' ')
 
     exec(command, function(error, stdout, stderr) {
       if (error) {
