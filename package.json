@@ -1,6 +1,9 @@
 {
   "name": "core-cli",
-  "bin": "./index.js",
+  "bin": {
+    "core-cli": "./bin/cli",
+    "core": "./bin/cli"
+  },
   "preferGlobal": true,
   "version": "1.0.0",
   "description": "",

@@ -8,8 +8,8 @@ module.exports = function installBase(siteName, isFork = false) {
   return new Promise((res, rej) => {
 
     const command = isFork
-      ? `git clone git@bitbucket.org/synthet1c/${siteName}.git`
-      : `git clone git@bitbucket.org/synthet1c/core-base.git ${siteName}` 
+      ? `git clone git@bitbucket.org:synthet1c/${siteName}.git`
+      : `git clone git@bitbucket.org:synthet1c/core-base.git ${siteName}` 
 
     exec(command, function(error, stdout, stderr) {
       if (error) {

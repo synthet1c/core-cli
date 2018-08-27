@@ -12,7 +12,7 @@ module.exports = function(module, siteName) {
     const command = [
       siteName ? `cd ${siteName} &&` : ``,
       `git subtree add`,
-      `--prefix modules/${config.module}`,
+      `--prefix packages/${config.module}`,
       `${config.repo} master --squash`
     ].join(' ')
 
