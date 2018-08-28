@@ -2,9 +2,10 @@ const inquirer = require('inquirer')
 const program = require('commander')
 const installModule = require('../../install-module-subtree')
 const modules = require('../../modules')
+const Listr = require('listr')
 
 program
-  .command('install [modules..]')
+  .command('module-install [modules..]')
   // .command('module install [modules..]')
   .description('install a module')
   .action(function(cliModules) {
@@ -12,15 +13,18 @@ program
     const doInstall = ({ cliModules }) => {
       console.log('cliModules', cliModules)
       const promises = cliModules.map(
-        module => installModule(module)
+        module => ({
+          title: `${module}`,
+          task: () => installModule(module)
+        }) 
       )
-      Promise.all(promises)
-        .then(results => {
-          console.log(`installed modules ${cliModules.join()}`)
-        })
-        .catch((error) => {
-          console.error(error) 
-        })
+      const tasks = new Listr([
+        {
+          title: 'Install modules',
+          task: () => new Listr(promises)
+        }
+      ])
+      tasks.run()
     }
 
     if (cliModules) {

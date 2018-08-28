@@ -6,6 +6,7 @@ const installBase = require('../../install-base')
 const installModule = require('../../install-module-subtree')
 const installPackage = require('../../install-package')
 const { sequence } = require('../../utils')
+const Listr = require('listr')
 
 program
   .command('init')
@@ -44,7 +45,7 @@ program
         // only display the question if the module has been included
         when: answers => answers.modules.includes(module),
         type: 'checkbox',
-        message: `[${module.toUpperCase()}] Features`,
+        message: `${module} features`,
         name: `packages.${module}`,
         choices: Object.keys(modules[module].packages)
       })),
@@ -61,41 +62,64 @@ program
       },
     ])
       .then(({ site_name, modules, packages, should_fork, make_private }) => {
+
         const modulePromises = modules.map(
-          module => () => installModule(module, site_name)
+          module => ({
+            title: `Installing module ${module}`,
+            task: () => installModule(module, site_name)
+          }) 
         )
         const packagePromises = modules.reduce((acc, module) => 
           acc.concat(packages[module].map(
-            package => () => installPackage(module, package, site_name))
-          )
+            package => ({
+              title: `Installing package ${module} ${package}`,
+              task: () => installPackage(module, package, site_name)
+            }) 
+          ))
         , [])
-        sequence([
-          x => { 
-            console.log('intalling fork'); 
-            return should_fork ? 
-              installFork(site_name, make_private) : 
-              Promise.resolve(x)
+        
+        // install the site with the configuration from above
+        const tasks = new Listr([
+          {
+            title: 'Fork base repo',
+            skip: () => !should_fork,
+            task: (ctx, task) => {
+              task.title = `Forking base repo` 
+              return installFork(site_name, make_private)
+                .then(() => {
+                  task.title = `Forked base repo`
+                })
+            } 
           },
-          x => { 
-            console.log('intalling site'); 
-            return installBase(site_name, should_fork)
+          {
+            title: `Install site into ./${site_name}`,
+            task: (ctx, task) => {
+              task.title = `Installing site into ./${site_name}`
+              return installBase(site_name, should_fork)
+                .then(() => {
+                  task.title = `Installed site into ./${site_name}`
+                })
+            }
           },
-          x => { 
-            console.log('installing modules'); 
-            return Promise.resolve(x) 
+          {
+            title: 'Install Modules',
+            skip: () => !modulePromises.length,
+            task: (ctx, task) => {
+              task.title = `Installing modules`
+              return new Listr(modulePromises) 
+            }
           },
-          ...modulePromises,
-          x => { 
-            console.log('installing packages'); 
-            return Promise.resolve(x) },
-          ...packagePromises,
-          x => { 
-            console.log('all done'); 
-            return Promise.resolve(x) 
+          {
+            title: 'Install Packages',
+            skip: () => !packagePromises.length,
+            task: (ctx, task) => {
+              task.title = `Installing packages`
+              return new Listr(packagePromises) 
+            }
           },
-        ])
-
-      })
+        ]);
+        tasks.run()
+    })
   })
 
 

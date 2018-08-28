@@ -7,7 +7,7 @@ const modules = require('../../modules')
 
 program
 // .command('module update [module] [branch]')
-  .command('update [module] [branch]')
+  .command('module-update [module] [branch]')
   .description('Update a subtree module')
   .action(function(module, branch) {
 

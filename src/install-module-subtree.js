@@ -9,10 +9,11 @@ module.exports = function(module, siteName) {
     }
 
     const config = modules[module]
+
     const command = [
       siteName ? `cd ${siteName} &&` : ``,
       `git subtree add`,
-      `--prefix packages/${config.module}`,
+      `--prefix modules/${config.module}`,
       `${config.repo} master --squash`
     ].join(' ')
 

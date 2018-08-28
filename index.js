@@ -17,6 +17,7 @@ const installModule = require('./src/install-module-subtree')
 const installPackage = require('./src/install-package')
 const modules = require('./src/modules')
 const { sequence } = require('./src/utils')
+const Listr = require('listr')
 
 require('./src/scripts')
 
@@ -35,6 +36,23 @@ program
   .description('initialize a project')
   .action(function() {
     getBranches('core-blog')  
+  })
+
+program
+  .command('tasks')
+  .description('Task runner')
+  .action(function() {
+    const tasks = new Listr([
+      {
+        title: 'Success',
+        task: () => Promise.resolve('Foo')
+      },
+      {
+        title: 'Failure',
+        task: () => Promise.resolve(new Error('Bar'))
+      }
+    ]);
+    tasks.run()
   })
 
 program.parse(process.argv)
