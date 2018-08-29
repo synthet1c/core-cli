@@ -58,24 +58,46 @@ program
     tasks.run()
   })
 
-const writeConfig = (name, config) => fs.writeFileSync(name, JSON.stringify(config))
+const configFileName = (process.env.HOME || process.env.HOMEPATH) + '/.coredna'
+const writeConfig = config => fs.writeFileSync(configFileName, JSON.stringify(config, null, 2))
+const readConfig = () => JSON.parse(fs.readFileSync(configFileName, 'utf-8')) || {}
 
 program
   .command('config')
   .description('Set your config')
-  .action(function() {
-    const configFileName = process.env.HOMEPATH + '/.coredna'
+  .option(`--account ${colors.cyan('<account>')}`, `Your agencies bitbucket account name ${colors.cyan('(string)')}`)
+  .option(`--ssh ${colors.cyan('[ssh]')}`, `Do you use an ssh private key for bitbucket ${colors.cyan('(bool)')}`)
+  .option(`--username ${colors.cyan('<account>')}`, `Bitbucket username ${colors.cyan('(string)')}`)
+  .action(function(options) {
+    const configFileName = (process.env.HOME || process.env.HOMEPATH) + '/.coredna'
     // set the
     // check to see if the user has an ssh key using
     // ssh -T git@bitbucket.org
     // logged in:
     if (!fs.existsSync(configFileName)) {
-      writeConfig(configFileName, {})
+      writeConfig({})
     }
-    const config = JSON.parse(fs.readFileSync(configFileName, 'utf-8'))
-    // get the config file from
-
-    inquirer.prompt([
+    // get the config file from the home directory
+    const config = readConfig()
+    
+    // handle options being set in the command
+    if (options.account || options.ssh || options.username) {
+      try {
+        if (options.ssh) {
+          var ssh = JSON.parse(options.ssh)
+        }
+      } catch (e) {
+        throw new Error(`ssh needs to be a boolean (true|false|0|1)`) 
+      }
+      return writeConfig({ 
+        account: typeof options.account !== 'undefined' ? options.account : config.account, 
+        ssh: typeof ssh === 'boolean' ? ssh : config.ssh, 
+        username: typeof options.username !== 'undefined' ? options.username : config.username, 
+      })
+    }
+    
+    // if no options provided use the config wizard
+    return inquirer.prompt([
       {
         name: 'account',
         type: 'input',
@@ -101,11 +123,14 @@ program
         suffix: `Your bitbucket username`
       },
     ])
-      .then(function(answers) {
-        writeConfig(configFileName, answers)
-      })
-
-
+    .then(writeConfig)
+  })
+  .on('--help', () => {
+    console.log('  Examples:')
+    console.log()
+    console.log('    $ deploy exec sequential')
+    console.log('    $ deploy exec async')
+    console.log()
   })
 
 program.parse(process.argv)
