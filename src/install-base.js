@@ -15,7 +15,10 @@ module.exports = function installBase(siteName, isFork = false) {
       if (error) {
         console.log("exec error: " + error)
         return rej(error)
-      } 
+      }
+      if (stderr) {
+        console.log(stderr)
+      }
       res(stdout || stderr)
     })
   })
