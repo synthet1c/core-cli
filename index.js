@@ -47,3 +47,5 @@ program
   .action(function() {
     console.log('process', process.env)
   })
+
+program.parse(process.argv)

@@ -118,5 +118,3 @@ program
     console.log('    $ deploy exec async')
     console.log()
   })
-
-program.parse(process.argv)
