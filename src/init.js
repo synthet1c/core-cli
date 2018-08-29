@@ -2,6 +2,7 @@ const inquirer = require('inquirer')
 const mkdirp = require('mkdirp')
 const exec = require('child_process').exec
 const installModule = require('./install-module')
+const Listr = require('listr')
 
 module.exports = function() {
 

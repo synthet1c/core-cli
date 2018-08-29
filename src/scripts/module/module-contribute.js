@@ -7,7 +7,7 @@ const getBranches = require('../../get-branches')
 
 program
   // .command('module contribute [module] [branch]')
-  .command('contribute [module] [branch]')
+  .command('module-contribute [module] [branch]')
   .description('Pull a subtree module')
   .action(function(module) {
     

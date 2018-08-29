@@ -14,8 +14,8 @@ module.exports = function(module, component) {
 
     const command = [
       `git subtree add`,
-      `--prefix modules/${module}/components/${component}`,
-      `https://bitbucket.com/synthet1c/${component}.git master --squash`
+      `--prefix packages/${module}/${component}`,
+      `${modules[module].component[component]} master --squash`
     ].join(' ')
 
     exec(command, function(error, stdout, stderr) {
