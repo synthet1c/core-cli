@@ -10,6 +10,9 @@ const configFileName = (process.env.HOME || process.env.HOMEPATH) + '/.coredna'
 const writeConfig = config => fs.writeFileSync(configFileName, JSON.stringify(config, null, 2))
 const readConfig = () => JSON.parse(fs.readFileSync(configFileName, 'utf-8')) || {}
 
+exports.writeConfig = writeConfig
+exports.readConfig = readConfig
+
 program
   .command('config')
   .description('Set your config')

@@ -1,3 +1,6 @@
+const { readConfig } = require('./scripts/base/config')
+const config = readConfig()
+
 // executed promises sequencially
 const sequence = funcs =>
   funcs.reduce((promise, func) =>
@@ -6,4 +9,18 @@ const sequence = funcs =>
     ), 
     Promise.resolve([])
   )
+
+const bitbucketUrl = config.ssh 
+  ? 'git@bitbucket.org:' 
+  : 'https://bitbucket.org/'
+
+const bitbucketAccount = config.account
+  ? config.account
+  : 'synthet1c'
+
+const getRepoUrl = repo => 
+  `${bitbucketUrl}${bitbucketAccount}/${repo}.git`
+
 exports.sequence = sequence
+exports.getRepoUrl = getRepoUrl
+  
