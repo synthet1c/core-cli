@@ -1,24 +1,23 @@
 const exec = require('child_process').exec
-const modules = require('./modules')
+const packages = require('./modules').packages
 
-module.exports = function(module, package, siteName) {
+module.exports = function(package, siteName) {
+  console.log(`package`, package, packages[package], packages)
   return new Promise((res, rej) => {
     
-    if (typeof modules[module] === 'undefined') {
-      throw new Error(`module ${module} not alowed`)
-    }
-    const config = modules[module]
-    const packages = config.packages
+
     // check if the provided component is allowed
     if (typeof packages[package] === 'undefined') {
       throw new Error(`package ${package} not alowed`)
     }
 
+    console.log(`package`, package, packages[package])
+
     const command = [
       siteName ? `cd ${siteName} &&` : ``,
       `git subtree add`,
-      `--prefix packages/${module}/${package}`,
-      `${packages[package]} master --squash`
+      `--prefix packages/${package}`,
+      `git@bitbucket.org:synthet1c/${packages[package]} master --squash`
     ].join(' ')
 
     exec(command, function(error, stdout, stderr) {

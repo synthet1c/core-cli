@@ -1,6 +1,6 @@
 const program = require('commander')
 const inquirer = require('inquirer')
-const modules = require('../../modules')
+const { modules, packages } = require('../../modules')
 const installFork = require('../../install-fork')
 const installBase = require('../../install-base')
 const installModule = require('../../install-module-subtree')
@@ -47,7 +47,7 @@ program
         type: 'checkbox',
         message: `${module} features`,
         name: `packages.${module}`,
-        choices: Object.keys(modules[module].packages)
+        choices: modules[module].packages,
       })),
       {
         type: 'list',
@@ -62,20 +62,27 @@ program
       },
     ])
       .then(({ site_name, modules, packages, should_fork, make_private }) => {
-
+        
+        console.log({ site_name, modules, packages, should_fork, make_private })
+        
         const modulePromises = modules.map(
           module => ({
             title: `Installing module ${module}`,
             task: () => installModule(module, site_name)
           }) 
         )
-        const packagePromises = modules.reduce((acc, module) => 
-          acc.concat(packages[module].map(
-            package => ({
-              title: `Installing package ${module} ${package}`,
-              task: () => installPackage(module, package, site_name)
-            }) 
+        const packagePromises = modules.reduce((acc, module) => {
+          console.log(`Installing module ${module}`)
+          return acc.concat(packages[module].map(
+            package => {
+              console.log(`Installing package ${module} ${package}`)
+              return ({
+                title: `Installing package ${module} ${package}`,
+                task: () => installPackage(package, site_name)
+              })
+            } 
           ))
+        }
         , [])
         
         // install the site with the configuration from above
