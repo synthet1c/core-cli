@@ -1,5 +1,6 @@
 const exec = require('child_process').exec
 const packages = require('./modules').packages
+const { getRepoUrl } = require('./utils')
 
 module.exports = function(package, siteName) {
   console.log(`package`, package, packages[package], packages)
@@ -17,7 +18,7 @@ module.exports = function(package, siteName) {
       siteName ? `cd ${siteName} &&` : ``,
       `git subtree add`,
       `--prefix packages/${package}`,
-      `git@bitbucket.org:synthet1c/${packages[package]} master --squash`
+      `${getRepoUrl(packages[package])} master --squash`
     ].join(' ')
 
     exec(command, function(error, stdout, stderr) {

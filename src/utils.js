@@ -19,7 +19,7 @@ const bitbucketAccount = config.account
   : 'synthet1c'
 
 const getRepoUrl = repo => 
-  `${bitbucketUrl}${bitbucketAccount}/${repo}.git`
+  `${bitbucketUrl}${bitbucketAccount}/${repo}`
 
 exports.sequence = sequence
 exports.getRepoUrl = getRepoUrl

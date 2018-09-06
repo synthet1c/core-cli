@@ -2,7 +2,7 @@
 const exec = require('child_process').exec
 const inquirer = require('inquirer')
 const program = require('commander')
-const modules = require('../../modules')
+const { modules, account, packages } = require('../../modules')
 const getBranches = require('../../get-branches')
 
 program
@@ -12,8 +12,13 @@ program
   .action(function(module) {
     
     const contribute = ({ module, branch = 'master' }) => {
-      const config = modules[module]
-      const command = `git subtree push --prefix ${config.modulePath} ssh://${config.repo} ${branch}`
+      const repo = modules[module].repo
+      const command = [
+        `git subtree push`,
+        `--prefix modules/${module}`,
+        `ssh://git@bitbucket.org:`${account}`/${packages[repo]} ${branch}`
+      ].join(' ')
+
       exec(command, function(error, stdout, stderr) {
         if (error) {
           console.log("exec error: " + error)
@@ -39,7 +44,7 @@ program
         type: 'list',
         message: 'Which branch would you like to push to',
         choices: answers => 
-          getBranches(modules[answers.module].repoName)
+          getBranches(packages[modules[answers.module].module])
       }
     ]).then(function({ module, branch }) {
       contribute({ module, branch })
